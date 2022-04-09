@@ -3,20 +3,54 @@ import tkinter.font as font
 from tkinter import scrolledtext
 from tkinter import messagebox
 from AnalizadorLexico import AnalizadorLexico
+import FileWriter
 
 analizador_lexico = AnalizadorLexico()
 
 
 def mandar_mensaje():
-    if len(area_texto.get(1.0, END)) > 1:
-        mensaje = "Tú: " + area_texto.get(1.0, END) + "\n"
+    contenido_mensaje = area_texto.get(1.0, END)
+    if len(contenido_mensaje) > 1:
+        mensaje = "Tú: " + contenido_mensaje + "\n"
         print(mensaje)
         area_chat.config(state="normal")
         area_chat.insert(END, mensaje)
         area_chat.config(state="disabled")
         area_texto.delete(1.0, END)
+        analizador_lexico.analizar(contenido_mensaje)
+        print("estos son los datos acumulados")
+        analizador_lexico.imprimir_tokens_acumulados()
+        analizador_lexico.imprimir_errores_acumulados()
+        print("estos son los datos actuales")
+        analizador_lexico.imprimir_tokens()
+        analizador_lexico.imprimir_errores()
+
     else:
         messagebox.showinfo(title="Error", message="No puedes enviar un mensaje vacío")
+
+
+def reporte_tokens():
+    if len(analizador_lexico.listaTokens) != 0:
+        FileWriter.reporte_tokens(analizador_lexico.listaTokens)
+    else:
+        messagebox.showinfo(title="error", message="No hay tokens para generar este reporte")
+
+
+def reporte_errores():
+    if len(analizador_lexico.listaErrores) != 0:
+        FileWriter.reporte_errores(analizador_lexico.listaErrores)
+    else:
+        messagebox.showinfo(title="error", message="No hay tokens para generar este reporte")
+
+
+def limpia_tokens():
+    analizador_lexico.listaTokens.clear()
+    messagebox.showinfo(title="aviso", message="Los tokens fueron limpiados")
+
+
+def limpia_errores():
+    analizador_lexico.listaErrores.clear()
+    messagebox.showinfo(title="aviso", message="Los errores fueron limpiados")
 
 
 # Info sobre la ventana
@@ -36,25 +70,25 @@ boton_analizar.place(x=700, y=660)
 
 # boton de generar reporte tokens
 boton_tokens = Button(Ventana_principal, text="Reporte de tokens")
-boton_tokens.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_tokens.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5, command=reporte_tokens)
 boton_tokens['font'] = mi_fuente
 boton_tokens.place(x=850, y=130)
 
 # boton de generar reporte de errores
 boton_errores = Button(Ventana_principal, text="Reporte de errores")
-boton_errores.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_errores.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5, command=reporte_errores)
 boton_errores['font'] = mi_fuente
 boton_errores.place(x=850, y=200)
 
 # boton de para limpiar tokens
 boton_delete_tokens = Button(Ventana_principal, text="Limpiar log tokens")
-boton_delete_tokens.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_delete_tokens.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5, command=limpia_tokens)
 boton_delete_tokens['font'] = mi_fuente
 boton_delete_tokens.place(x=850, y=270)
 
 # boton de para limpiar errores
 boton_delete_errors = Button(Ventana_principal, text="Limpiar log errores")
-boton_delete_errors.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_delete_errors.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5, command=limpia_errores)
 boton_delete_errors['font'] = mi_fuente
 boton_delete_errors.place(x=850, y=340)
 
