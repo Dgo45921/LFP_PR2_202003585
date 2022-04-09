@@ -1,6 +1,23 @@
 from tkinter import *
 import tkinter.font as font
 from tkinter import scrolledtext
+from tkinter import messagebox
+from AnalizadorLexico import AnalizadorLexico
+
+analizador_lexico = AnalizadorLexico()
+
+
+def mandar_mensaje():
+    if len(area_texto.get(1.0, END)) > 1:
+        mensaje = "Tú: " + area_texto.get(1.0, END) + "\n"
+        print(mensaje)
+        area_chat.config(state="normal")
+        area_chat.insert(END, mensaje)
+        area_chat.config(state="disabled")
+        area_texto.delete(1.0, END)
+    else:
+        messagebox.showinfo(title="Error", message="No puedes enviar un mensaje vacío")
+
 
 # Info sobre la ventana
 Ventana_principal = Tk()
@@ -13,7 +30,7 @@ mi_fuente = font.Font(family='Helvetica', size=15)
 
 # boton para enviar comando
 boton_analizar = Button(Ventana_principal, text="Enviar")
-boton_analizar.configure(width=6, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_analizar.configure(width=6, height=2, bg="#213dec", fg="white", borderwidth=5, command=mandar_mensaje)
 boton_analizar['font'] = mi_fuente
 boton_analizar.place(x=700, y=660)
 
@@ -53,16 +70,15 @@ boton_manual_tecnico.configure(width=15, height=2, bg="#213dec", fg="white", bor
 boton_manual_tecnico['font'] = mi_fuente
 boton_manual_tecnico.place(x=850, y=480)
 # creando area de chat
-area_chat = scrolledtext.ScrolledText(Ventana_principal, height=30, width=90)
+area_chat = scrolledtext.ScrolledText(Ventana_principal, height=27, width=90)
 area_chat.place(x=60, y=130)
 area_chat.config(state="normal")
-area_chat.insert(END, """LaLiga bot: ¡Hola! preguntame lo que quieras sobre 'LaLiga'\n""")
-area_chat.insert(END, """LaLiga bot: ¡Hola! preguntame lo que quieras sobre 'LaLiga'""")
+area_chat.insert(END, """LaLiga bot: ¡Hola! preguntame lo que quieras sobre 'LaLiga'""" + "\n" + "\n")
 area_chat.config(state="disabled")
+area_chat.configure(font=("Times New Roman", 12))
 
 # creando area para enviar comando
 area_texto = Text(Ventana_principal, height=3, width=75)
 area_texto.place(x=60, y=660)
 
 Ventana_principal.mainloop()
-
