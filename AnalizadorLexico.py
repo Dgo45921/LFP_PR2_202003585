@@ -52,7 +52,6 @@ class AnalizadorLexico:
         self.listaErrores.append(Error("Caracter: " + caracter + " desconocido", linea, columna))
         self.lista_errores_actuales.append(Error("Caracter: " + caracter + " desconocido", linea, columna))
 
-
     def s0(self, caracter):
         if caracter == '"':
             self.estado = 1
