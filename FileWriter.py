@@ -38,7 +38,7 @@ def reporte_tokens(lista_tokens):
         os.system("xdg-open Reporte_tokens.html")
 
 
-def reporte_errores(lista_errores):
+def reporte_errores(lista_errores, errores_sintacticos):
     reporte = open("Reporte_errores.html", "w")
     reporte.write("<!DOCTYPE html>\n")
     reporte.write("<html>\n")
@@ -49,6 +49,7 @@ def reporte_errores(lista_errores):
     reporte.write("</head>\n")
     reporte.write("<body>\n")
     reporte.write("<h1>Reporte de errores</h1>")
+    reporte.write("<h3>Errores léxicos:</h3>")
     # aqui ira la tabla
     reporte.write("<table>\n")
     reporte.write("<tr>\n")
@@ -62,7 +63,17 @@ def reporte_errores(lista_errores):
         reporte.write("<td>" + str(error.linea) + "</td>\n")
         reporte.write("<td>" + str(error.columna) + "</td>\n")
         reporte.write("</tr>\n")
-
+    reporte.write("</table>\n")
+    # Aqui inicia la tabla de errores sintacticos
+    reporte.write("<h3>Errores sintácticos:</h3>")
+    reporte.write("<table>\n")
+    reporte.write("<tr>\n")
+    reporte.write("<th>Descripcion</th>\n")
+    reporte.write("</tr>\n")
+    for error in errores_sintacticos:
+        reporte.write("<tr>\n")
+        reporte.write("<td>" + error + "</td>\n")
+        reporte.write("</tr>\n")
     reporte.write("</table>\n")
     reporte.write("</body>\n")
     reporte.write("</html>\n")

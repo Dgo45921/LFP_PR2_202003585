@@ -93,7 +93,7 @@ class AnalizadorLexico:
             self.columna += 1
 
     def s2(self):
-        self.agrega_token(self.buffer, self.linea, self.columna-len(self.buffer), "nombre_equipo")
+        self.agrega_token(self.buffer, self.linea, self.columna-len(self.buffer), "cadena")
         self.estado = 0
 
     def s3(self, caracter):

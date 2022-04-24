@@ -3,9 +3,12 @@ import tkinter.font as font
 from tkinter import scrolledtext
 from tkinter import messagebox
 from AnalizadorLexico import AnalizadorLexico
+import AnalizadorSintactico
+from AnalizadorSintactico import AnalizadorSintactico
 import FileWriter
 
 analizador_lexico = AnalizadorLexico()
+analizador_sintactico = AnalizadorSintactico([])
 
 
 def mandar_mensaje():
@@ -24,6 +27,14 @@ def mandar_mensaje():
         print("estos son los datos actuales")
         analizador_lexico.imprimir_tokens()
         analizador_lexico.imprimir_errores()
+        analizador_sintactico.lista_tokens = analizador_lexico.listaTokens
+        respuesta = analizador_sintactico.S()
+        if respuesta is not None:
+            area_chat.config(state="normal")
+            area_chat.insert(END, respuesta)
+            area_chat.config(state="disabled")
+
+
 
     else:
         messagebox.showinfo(title="Error", message="No puedes enviar un mensaje vacío")
@@ -37,10 +48,10 @@ def reporte_tokens():
 
 
 def reporte_errores():
-    if len(analizador_lexico.listaErrores) != 0:
-        FileWriter.reporte_errores(analizador_lexico.listaErrores)
+    if len(analizador_lexico.listaErrores) != 0 or len(analizador_sintactico.lista_errores) != 0:
+        FileWriter.reporte_errores(analizador_lexico.listaErrores, analizador_sintactico.lista_errores)
     else:
-        messagebox.showinfo(title="error", message="No hay tokens para generar este reporte")
+        messagebox.showinfo(title="error", message="No hay errores para generar este reporte")
 
 
 def limpia_tokens():
@@ -50,6 +61,7 @@ def limpia_tokens():
 
 def limpia_errores():
     analizador_lexico.listaErrores.clear()
+    analizador_sintactico.lista_errores.clear()
     messagebox.showinfo(title="aviso", message="Los errores fueron limpiados")
 
 

@@ -27,6 +27,13 @@ h1 {
       font-weight: bold;
     text-align: center;
 }
+
+h3 {
+      font-family: Optima, sans-serif;
+      font-weight: bold;
+    text-align: center;
+}
+
 body{
     background-image: url("https://migrexabogados.com/wp-content/uploads/2015/11/Savin-NY-Website-Background-Web.jpg");
      background-repeat: no-repeat;
