@@ -37,7 +37,8 @@ class AnalizadorSintactico:
             respuesta = self.GOLES()
             return respuesta
         elif actual.tipo == "reservada_TABLA":
-            pass
+            respuesta = self.TABLA()
+            return respuesta
         elif actual.tipo == "reservada_PARTIDOS":
             pass
         elif actual.tipo == "reservada_TOP":
@@ -60,12 +61,12 @@ class AnalizadorSintactico:
             elif actual.tipo == "bandera_f":
                 actual = self.sacar_token()
                 if actual is None:
-                    self.agregar_error("nombre_archivo", "EOF")
+                    self.agregar_error("name_archivo", "EOF")
                     return self.mensaje_error()
-                elif actual.tipo == "nombre_archivo":
+                elif actual.tipo == "name_archivo":
                     print("siuuuuuu")  # exito
                 else:
-                    self.agregar_error("bandera_f", actual.tipo)
+                    self.agregar_error("name_archivo", actual.tipo)
                     return self.mensaje_error()
             else:
                 self.agregar_error("bandera_f", actual.tipo)
@@ -299,6 +300,62 @@ class AnalizadorSintactico:
 
         else:
             self.agregar_error("reservada_GOLES", actual.tipo)
+            return self.mensaje_error()
+
+    def TABLA(self):
+        actual = self.sacar_token()
+        if actual.tipo == "reservada_TABLA":
+            actual = self.sacar_token()
+            if actual is None:
+                self.agregar_error("reservada_TEMPORADA", "EOF")
+                return self.mensaje_error()
+            elif actual.tipo == "reservada_TEMPORADA":
+                actual = self.sacar_token()
+                if actual is None:
+                    self.agregar_error("menorQUE", "EOF")
+                    return self.mensaje_error()
+                elif actual.tipo == "menorQUE":
+                    actual = self.sacar_token()
+                    if actual is None:
+                        self.agregar_error("numero", "EOF")
+                        return self.mensaje_error()
+                    elif actual.tipo == "numero":
+                        actual = self.sacar_token()
+                        if actual is None:
+                            self.agregar_error("guion", "EOF")
+                            return self.mensaje_error()
+                        elif actual.tipo == "guion":
+                            actual = self.sacar_token()
+                            if actual is None:
+                                self.agregar_error("numero", "EOF")
+                                return self.mensaje_error()
+                            elif actual.tipo == "numero":
+                                actual = self.sacar_token()
+                                if actual is None:
+                                    self.agregar_error("mayorQUE", "EOF")
+                                    return self.mensaje_error()
+                                elif actual.tipo == "mayorQUE":
+                                    return self.BANDERA1("tabla")
+                                else:
+                                    self.agregar_error("mayorQUE", actual.tipo)
+                                    return self.mensaje_error()
+                            else:
+                                self.agregar_error("numero", actual.tipo)
+                                return self.mensaje_error()
+                        else:
+                            self.agregar_error("guion", actual.tipo)
+                            return self.mensaje_error()
+                    else:
+                        self.agregar_error("numero", actual.tipo)
+                        return self.mensaje_error()
+                else:
+                    self.agregar_error("menorQUE", actual.tipo)
+                    return self.mensaje_error()
+            else:
+                self.agregar_error("reservada_TEMPORADA", actual.tipo)
+                return self.mensaje_error()
+        else:
+            self.agregar_error("TABLA", actual.tipo)
             return self.mensaje_error()
 
     def mensaje_error(self):
