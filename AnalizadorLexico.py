@@ -121,7 +121,7 @@ class AnalizadorLexico:
             self.i -= 1
 
     def s5(self, caracter):
-        if caracter.isdigit() or caracter.isalpha():
+        if caracter.isdigit() or caracter.isalpha() or caracter == "_":
             self.estado = 5
             self.buffer += caracter
             self.columna += 1
