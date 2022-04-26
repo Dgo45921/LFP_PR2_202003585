@@ -1,14 +1,23 @@
 from tkinter import *
 import tkinter.font as font
-from tkinter import scrolledtext
+from tkinter import scrolledtext, filedialog
 from tkinter import messagebox
 from AnalizadorLexico import AnalizadorLexico
-import AnalizadorSintactico
 from AnalizadorSintactico import AnalizadorSintactico
 import FileWriter
 
 analizador_lexico = AnalizadorLexico()
 analizador_sintactico = AnalizadorSintactico([])
+
+
+def cargar_archivo():
+    ruta = filedialog.askopenfilename(title="Selecciona un archivo", initialdir="/",
+                                      filetypes=(("csv files", "*.csv"), ("", "")))
+    if type(ruta) != tuple:
+        archivo = open(ruta, "r")
+        texto_archivo = archivo.read()
+        archivo.close()
+        print(texto_archivo)
 
 
 def mandar_mensaje():
@@ -115,6 +124,13 @@ boton_manual_tecnico = Button(Ventana_principal, text="Manual técnico")
 boton_manual_tecnico.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
 boton_manual_tecnico['font'] = mi_fuente
 boton_manual_tecnico.place(x=850, y=480)
+
+# boton cargar archivo
+boton_manual_tecnico = Button(Ventana_principal, text="Cargar .csv", command=cargar_archivo)
+boton_manual_tecnico.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_manual_tecnico['font'] = mi_fuente
+boton_manual_tecnico.place(x=10, y=30)
+
 # creando area de chat
 area_chat = scrolledtext.ScrolledText(Ventana_principal, height=27, width=90)
 area_chat.place(x=60, y=130)
