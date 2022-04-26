@@ -27,7 +27,7 @@ def mandar_mensaje():
         print("estos son los datos actuales")
         analizador_lexico.imprimir_tokens()
         analizador_lexico.imprimir_errores()
-        analizador_sintactico.lista_tokens = analizador_lexico.listaTokens
+        analizador_sintactico.lista_tokens = analizador_lexico.lista_tokens_actuales
         respuesta = analizador_sintactico.S()
         if respuesta is not None:
             area_chat.config(state="normal")

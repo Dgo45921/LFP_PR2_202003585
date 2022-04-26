@@ -1,3 +1,6 @@
+lista_banderas = ["", "", ""]
+
+
 class AnalizadorSintactico:
     def __init__(self, lista_tokens: list):
         self.lista_tokens = lista_tokens
@@ -18,11 +21,21 @@ class AnalizadorSintactico:
         except:
             return None
 
+    def ver_token2(self):
+        try:
+            return self.lista_tokens[1]
+        except:
+            return None
+
     def S(self):
         respuesta = self.INICIO()
         return respuesta
 
     def INICIO(self):
+        global lista_banderas
+        lista_banderas[0] = ""
+        lista_banderas[1] = ""
+        lista_banderas[2] = ""
         actual = self.ver_token()
         if actual is None:
             self.agregar_error("RESULTADO | JORNADA | GOLES | TABLA | PARTIDOS | TOP | ADIOS", "EOF")
@@ -40,7 +53,8 @@ class AnalizadorSintactico:
             respuesta = self.TABLA()
             return respuesta
         elif actual.tipo == "reservada_PARTIDOS":
-            pass
+            respuesta = self.PARTIDOS()
+            return respuesta
         elif actual.tipo == "reservada_TOP":
             pass
         elif actual.tipo == "reservada_ADIOS":
@@ -49,10 +63,11 @@ class AnalizadorSintactico:
             self.agregar_error("RESULTADO | JORNADA | GOLES | TABLA | PARTIDOS | TOP | ADIOS", actual.tipo)
             return self.mensaje_error()
 
-    def BANDERA1(self, tipo):
+    def BANDERA1(self):
         actual = self.sacar_token()
         if actual is None:
             print("se crea archivo default")  # exito
+            return None
         elif actual.tipo == "guion":
             actual = self.sacar_token()
             if actual is None:
@@ -64,7 +79,8 @@ class AnalizadorSintactico:
                     self.agregar_error("name_archivo", "EOF")
                     return self.mensaje_error()
                 elif actual.tipo == "name_archivo":
-                    print("siuuuuuu")  # exito
+                    lista_banderas[0] = actual.lexema
+                    return "exito"
                 else:
                     self.agregar_error("name_archivo", actual.tipo)
                     return self.mensaje_error()
@@ -73,6 +89,149 @@ class AnalizadorSintactico:
                 return self.mensaje_error()
         else:
             self.agregar_error("EOF", actual.tipo)
+            return self.mensaje_error()
+
+    def BANDERA2(self):
+        actual = self.sacar_token()
+        if actual is None:
+            print("incluir partidos desde la jornada inicial")  # exito
+        elif actual.tipo == "guion":
+            actual = self.sacar_token()
+            if actual is None:
+                self.agregar_error("bandera_ji", "EOF")
+                return self.mensaje_error()
+            elif actual.tipo == "bandera_ji":
+                actual = self.sacar_token()
+                if actual is None:
+                    self.agregar_error("numero", "EOF")
+                    return self.mensaje_error()
+                elif actual.tipo == "numero":
+                    lista_banderas[1] = actual.lexema
+                    return "exito"
+                else:
+                    self.agregar_error("numero", actual.tipo)
+                    return self.mensaje_error()
+            else:
+                self.agregar_error("bandera_ji", actual.tipo)
+                return self.mensaje_error()
+        else:
+            self.agregar_error("EOF", actual.tipo)
+            return self.mensaje_error()
+
+    def BANDERA3(self):
+        actual = self.sacar_token()
+        if actual is None:
+            print("incluir todos los partidos hasta la jornada final")  # exito
+        elif actual.tipo == "guion":
+            actual = self.sacar_token()
+            if actual is None:
+                self.agregar_error("bandera_jf", "EOF")
+                return self.mensaje_error()
+            elif actual.tipo == "bandera_jf":
+                actual = self.sacar_token()
+                if actual is None:
+                    self.agregar_error("numero", "EOF")
+                    return self.mensaje_error()
+                elif actual.tipo == "numero":
+                    lista_banderas[2] = actual.lexema
+                    return "exito"
+                else:
+                    self.agregar_error("numero", actual.tipo)
+                    return self.mensaje_error()
+            else:
+                self.agregar_error("bandera_jf", actual.tipo)
+                return self.mensaje_error()
+        else:
+            self.agregar_error("EOF", actual.tipo)
+            return self.mensaje_error()
+
+    def LISTA_BANDERAS(self):
+        respuesta_bot = "LaLiga Bot: creando archivo... Si una bandera no fue escrita se usarán valores por defecto \n"
+        actual = self.ver_token()
+        actual2 = self.ver_token2()
+        if actual is None:
+            return ""
+        elif actual.tipo == "guion":
+            if actual2.tipo == "bandera_f":
+                respuesta = self.BANDERA1()
+                if respuesta is None:
+                    lista_banderas[0] = ""
+                    respuesta_bot += "con nombre por defecto" + "\n"
+                elif respuesta == "exito":
+                    respuesta_bot += " con nombre: " + lista_banderas[0] + "\n"
+                else:
+                    return self.mensaje_error()
+            elif actual2.tipo == "bandera_ji":
+                respuesta = self.BANDERA2()
+                if respuesta is None:
+                    lista_banderas[1] = ""
+                    respuesta_bot += "con jornada inicial primera" + "\n"
+                elif respuesta == "exito":
+                    respuesta_bot += " temporada inicial: " + lista_banderas[1] + "\n"
+                else:
+                    return self.mensaje_error()
+            elif actual2.tipo == "bandera_jf":
+                respuesta = self.BANDERA3()
+                if respuesta is None:
+                    lista_banderas[2] = ""
+                    respuesta_bot += "con jornada final última" + "\n"
+                elif respuesta == "exito":
+                    respuesta_bot += " temporada final: " + lista_banderas[2] + "\n"
+                else:
+                    return self.mensaje_error()
+            else:
+                self.agregar_error("bandera_f | bandera_ji | bandera_jf", actual2.tipo)
+                return self.mensaje_error()
+
+            respuesta2 = self.LISTA_BANDERAS_()
+            return respuesta_bot + respuesta2 + "\n"
+        else:
+            self.agregar_error("bandera_f | bandera_ji | bandera_jf", actual.tipo)
+            return self.mensaje_error()
+
+    def LISTA_BANDERAS_(self):
+        respuesta_bot = ""
+        global lista_banderas
+        actual = self.ver_token()
+        actual2 = self.ver_token2()
+        if actual is None:
+            return ""
+        elif actual.tipo == "guion":
+            if actual2.tipo == "bandera_f":
+                respuesta = self.BANDERA1()
+                if respuesta is None:
+                    lista_banderas[0] = ""
+                    respuesta_bot += "con nombre por defecto" + "\n"
+                elif respuesta == "exito":
+                    respuesta_bot += " con nombre: " + lista_banderas[0] + "\n"
+                else:
+                    return self.mensaje_error()
+            elif actual2.tipo == "bandera_ji":
+                respuesta = self.BANDERA2()
+                if respuesta is None:
+                    lista_banderas[1] = ""
+                    respuesta_bot += "con jornada inicial primera" + "\n"
+                elif respuesta == "exito":
+                    respuesta_bot += " temporada inicial: " + lista_banderas[1] + "\n"
+                else:
+                    return self.mensaje_error()
+            elif actual2.tipo == "bandera_jf":
+                respuesta = self.BANDERA3()
+                if respuesta is None:
+                    lista_banderas[2] = ""
+                    respuesta_bot += "con jornada final última" + "\n"
+                elif respuesta == "exito":
+                    respuesta_bot += " temporada final: " + lista_banderas[2] + "\n"
+                else:
+                    return self.mensaje_error()
+            else:
+                self.agregar_error("bandera_f | bandera_ji | bandera_jf", actual2.tipo)
+                return self.mensaje_error()
+
+            respuesta2 = self.LISTA_BANDERAS_()
+            return respuesta_bot + respuesta2
+        else:
+            self.agregar_error("bandera_f | bandera_ji | bandera_jf", actual.tipo)
             return self.mensaje_error()
 
     def RESULTADO(self):
@@ -156,6 +315,9 @@ class AnalizadorSintactico:
             return self.mensaje_error()
 
     def JORNADA(self):
+        num_jornada = 0
+        anio1 = 0
+        anio2 = 0
         actual = self.sacar_token()
         if actual.tipo == "reservada_JORNADA":
             actual = self.sacar_token()
@@ -163,6 +325,7 @@ class AnalizadorSintactico:
                 self.agregar_error("numero", "EOF")
                 return self.mensaje_error()
             elif actual.tipo == "numero":
+                num_jornada = actual.lexema
                 actual = self.sacar_token()
                 if actual is None:
                     self.agregar_error("reservada_TEMPORADA", "EOF")
@@ -178,6 +341,7 @@ class AnalizadorSintactico:
                             self.agregar_error("numero", "EOF")
                             return self.mensaje_error()
                         elif actual.tipo == "numero":
+                            anio1 = actual.lexema
                             actual = self.sacar_token()
                             if actual is None:
                                 self.agregar_error("guion", "EOF")
@@ -188,12 +352,21 @@ class AnalizadorSintactico:
                                     self.agregar_error("numero", "EOF")
                                     return self.mensaje_error()
                                 elif actual.tipo == "numero":
+                                    anio2 = actual.lexema
                                     actual = self.sacar_token()
                                     if actual is None:
                                         self.agregar_error("mayorQUE", "EOF")
                                         return self.mensaje_error()
                                     elif actual.tipo == "mayorQUE":
-                                        return self.BANDERA1("jornada")
+                                        respuesta = self.BANDERA1()
+                                        if respuesta is None:
+                                            print("nombre default")
+                                            return "LaLiga Bot: Generando archivo de resultados jornada" + num_jornada + " temporada " + anio1 + " - " + anio2 + "\n" + "\n"
+                                        elif respuesta == "exito":
+                                            return "LaLiga Bot: Generando archivo de resultados: " + lista_banderas[
+                                                0] + "jornada" + num_jornada + " temporada " + anio1 + " - " + anio2 + "\n" + "\n"
+                                        else:
+                                            return respuesta
                                     else:
                                         self.agregar_error("mayorQUE", actual.tipo)
                                         return self.mensaje_error()
@@ -335,7 +508,7 @@ class AnalizadorSintactico:
                                     self.agregar_error("mayorQUE", "EOF")
                                     return self.mensaje_error()
                                 elif actual.tipo == "mayorQUE":
-                                    return self.BANDERA1("tabla")
+                                    return self.BANDERA1()
                                 else:
                                     self.agregar_error("mayorQUE", actual.tipo)
                                     return self.mensaje_error()
@@ -356,6 +529,71 @@ class AnalizadorSintactico:
                 return self.mensaje_error()
         else:
             self.agregar_error("TABLA", actual.tipo)
+            return self.mensaje_error()
+
+    def PARTIDOS(self):
+        actual = self.sacar_token()
+        if actual.tipo == "reservada_PARTIDOS":
+            actual = self.sacar_token()
+            if actual is None:
+                self.agregar_error("cadena", "EOF")
+                return self.mensaje_error()
+            elif actual.tipo == "cadena":
+                actual = self.sacar_token()
+                if actual is None:
+                    self.agregar_error("reservada_TEMPORADA", "EOF")
+                    return self.mensaje_error()
+                elif actual.tipo == "reservada_TEMPORADA":
+                    actual = self.sacar_token()
+                    if actual is None:
+                        self.agregar_error("menorQUE", "EOF")
+                        return self.mensaje_error()
+                    elif actual.tipo == "menorQUE":
+                        actual = self.sacar_token()
+                        if actual is None:
+                            self.agregar_error("numero", "EOF")
+                            return self.mensaje_error()
+                        elif actual.tipo == "numero":
+                            actual = self.sacar_token()
+                            if actual is None:
+                                self.agregar_error("guion", "EOF")
+                                return self.mensaje_error()
+                            elif actual.tipo == "guion":
+                                actual = self.sacar_token()
+                                if actual is None:
+                                    self.agregar_error("numero", "EOF")
+                                    return self.mensaje_error()
+                                elif actual.tipo == "numero":
+                                    actual = self.sacar_token()
+                                    if actual is None:
+                                        self.agregar_error("mayorQUE", "EOF")
+                                        return self.mensaje_error()
+                                    elif actual.tipo == "mayorQUE":
+                                        respuesta = self.LISTA_BANDERAS()
+                                        return respuesta
+                                    else:
+                                        self.agregar_error("mayorQUE", actual.tipo)
+                                        return self.mensaje_error()
+                                else:
+                                    self.agregar_error("numero", actual.tipo)
+                                    return self.mensaje_error()
+                            else:
+                                self.agregar_error("guion", actual.tipo)
+                                return self.mensaje_error()
+                        else:
+                            self.agregar_error("numero", actual.tipo)
+                            return self.mensaje_error()
+                    else:
+                        self.agregar_error("menorQUE", actual.tipo)
+                        return self.mensaje_error()
+                else:
+                    self.agregar_error("reservada_TEMPORADA", actual.tipo)
+                    return self.mensaje_error()
+            else:
+                self.agregar_error("cadena", actual.tipo)
+                return self.mensaje_error()
+        else:
+            self.agregar_error("reservada_PARTIDOS", actual.tipo)
             return self.mensaje_error()
 
     def mensaje_error(self):
