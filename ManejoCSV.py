@@ -9,7 +9,6 @@ def definir_csv(ruta):
     global csv_data
     try:
         csv_data = pd.read_csv(ruta, header=0)
-        print(csv_data)
     except Exception as e:
         print(e)
         csv_data = None

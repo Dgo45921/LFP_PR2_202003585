@@ -660,7 +660,7 @@ class AnalizadorSintactico:
 
                                         ManejoCSV.temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicial, jornada_final)
 
-                                        return "Generando archivo de resultados de temporada: " + str(anio1) + "-" + str(anio2) + " del " + name_equipo
+                                        return "Generando archivo de resultados de temporada: " + str(anio1) + "-" + str(anio2) + " del " + name_equipo + "\n" + "\n"
                                     else:
                                         self.agregar_error("mayorQUE", actual.tipo)
                                         return self.mensaje_error()

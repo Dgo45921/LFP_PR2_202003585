@@ -7,9 +7,18 @@ from AnalizadorLexico import AnalizadorLexico
 from AnalizadorSintactico import AnalizadorSintactico
 import FileWriter
 import ManejoCSV
+import os
 
 analizador_lexico = AnalizadorLexico()
 analizador_sintactico = AnalizadorSintactico([])
+
+
+def abrir_user():
+    os.system('firefox Documentación/user.pdf')
+
+
+def abrir_tecnico():
+    os.system('firefox Documentación/tecnico.pdf')
 
 
 def cargar_archivo():
@@ -30,12 +39,12 @@ def mandar_mensaje():
             area_chat.config(state="disabled")
             area_texto.delete(1.0, END)
             analizador_lexico.analizar(contenido_mensaje)
-            print("estos son los datos acumulados")
-            analizador_lexico.imprimir_tokens_acumulados()
-            analizador_lexico.imprimir_errores_acumulados()
-            print("estos son los datos actuales")
-            analizador_lexico.imprimir_tokens()
-            analizador_lexico.imprimir_errores()
+            # print("estos son los datos acumulados")
+            # analizador_lexico.imprimir_tokens_acumulados()
+            # analizador_lexico.imprimir_errores_acumulados()
+            # print("estos son los datos actuales")
+            # analizador_lexico.imprimir_tokens()
+            # analizador_lexico.imprimir_errores()
             analizador_sintactico.lista_tokens = analizador_lexico.lista_tokens_actuales
             respuesta = analizador_sintactico.S()
             if respuesta is not None:
@@ -119,13 +128,13 @@ boton_delete_errors.place(x=950, y=340)
 
 # boton manual de usuario
 boton_manual_users = Button(Ventana_principal, text="Manual de usuario")
-boton_manual_users.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_manual_users.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5, command=abrir_user)
 boton_manual_users['font'] = mi_fuente
 boton_manual_users.place(x=950, y=410)
 
 # boton manual tecnico
 boton_manual_tecnico = Button(Ventana_principal, text="Manual técnico")
-boton_manual_tecnico.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5)
+boton_manual_tecnico.configure(width=15, height=2, bg="#213dec", fg="white", borderwidth=5, command=abrir_tecnico)
 boton_manual_tecnico['font'] = mi_fuente
 boton_manual_tecnico.place(x=950, y=480)
 
