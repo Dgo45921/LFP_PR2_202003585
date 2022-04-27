@@ -2,9 +2,11 @@ from tkinter import *
 import tkinter.font as font
 from tkinter import scrolledtext, filedialog
 from tkinter import messagebox
+from tkinter.messagebox import askyesno
 from AnalizadorLexico import AnalizadorLexico
 from AnalizadorSintactico import AnalizadorSintactico
 import FileWriter
+import ManejoCSV
 
 analizador_lexico = AnalizadorLexico()
 analizador_sintactico = AnalizadorSintactico([])
@@ -14,39 +16,41 @@ def cargar_archivo():
     ruta = filedialog.askopenfilename(title="Selecciona un archivo", initialdir="/",
                                       filetypes=(("csv files", "*.csv"), ("", "")))
     if type(ruta) != tuple:
-        archivo = open(ruta, "r")
-        texto_archivo = archivo.read()
-        archivo.close()
-        print(texto_archivo)
+        ManejoCSV.definir_csv(ruta)
 
 
 def mandar_mensaje():
-    contenido_mensaje = area_texto.get(1.0, END)
-    if len(contenido_mensaje) > 1:
-        mensaje = "Tú: " + contenido_mensaje + "\n"
-        print(mensaje)
-        area_chat.config(state="normal")
-        area_chat.insert(END, mensaje)
-        area_chat.config(state="disabled")
-        area_texto.delete(1.0, END)
-        analizador_lexico.analizar(contenido_mensaje)
-        print("estos son los datos acumulados")
-        analizador_lexico.imprimir_tokens_acumulados()
-        analizador_lexico.imprimir_errores_acumulados()
-        print("estos son los datos actuales")
-        analizador_lexico.imprimir_tokens()
-        analizador_lexico.imprimir_errores()
-        analizador_sintactico.lista_tokens = analizador_lexico.lista_tokens_actuales
-        respuesta = analizador_sintactico.S()
-        if respuesta is not None:
+    if ManejoCSV.csv_data is not None:
+        contenido_mensaje = area_texto.get(1.0, END)
+        if len(contenido_mensaje) > 1:
+            mensaje = "Tú: " + contenido_mensaje + "\n"
+            print(mensaje)
             area_chat.config(state="normal")
-            area_chat.insert(END, respuesta)
+            area_chat.insert(END, mensaje)
             area_chat.config(state="disabled")
-
-
-
+            area_texto.delete(1.0, END)
+            analizador_lexico.analizar(contenido_mensaje)
+            print("estos son los datos acumulados")
+            analizador_lexico.imprimir_tokens_acumulados()
+            analizador_lexico.imprimir_errores_acumulados()
+            print("estos son los datos actuales")
+            analizador_lexico.imprimir_tokens()
+            analizador_lexico.imprimir_errores()
+            analizador_sintactico.lista_tokens = analizador_lexico.lista_tokens_actuales
+            respuesta = analizador_sintactico.S()
+            if respuesta is not None:
+                area_chat.config(state="normal")
+                area_chat.insert(END, respuesta)
+                area_chat.config(state="disabled")
+                if respuesta == "Laliga Bot: ADIOS":
+                    answer = askyesno(title='confirmación',
+                                      message='¿Seguro que deseas salir?')
+                    if answer:
+                        exit()
+        else:
+            messagebox.showinfo(title="Error", message="No puedes enviar un mensaje vacío")
     else:
-        messagebox.showinfo(title="Error", message="No puedes enviar un mensaje vacío")
+        messagebox.showinfo(title="Error", message="Cargue un archivo csv, por favor")
 
 
 def reporte_tokens():

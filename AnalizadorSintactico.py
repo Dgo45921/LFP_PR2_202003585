@@ -1,3 +1,4 @@
+import ManejoCSV
 lista_banderas = ["", "", "", ""]
 
 
@@ -60,7 +61,8 @@ class AnalizadorSintactico:
             respuesta = self.TOP()
             return respuesta
         elif actual.tipo == "reservada_ADIOS":
-            pass
+            respuesta = self.ADIOS()
+            return respuesta
         else:
             self.agregar_error("RESULTADO | JORNADA | GOLES | TABLA | PARTIDOS | TOP | ADIOS", actual.tipo)
             return self.mensaje_error()
@@ -264,6 +266,11 @@ class AnalizadorSintactico:
             return self.mensaje_error()
 
     def RESULTADO(self):
+        equipo1 = ""
+        equipo2 = ""
+        anio1 = 0
+        anio2 = 0
+
         actual = self.sacar_token()
         if actual.tipo == "reservada_RESULTADO":
             actual = self.sacar_token()
@@ -271,6 +278,7 @@ class AnalizadorSintactico:
                 self.agregar_error("cadena", "EOF")
                 return self.mensaje_error()
             elif actual.tipo == "cadena":
+                equipo1 = actual.lexema.replace('"', "")
                 actual = self.sacar_token()
                 if actual is None:
                     self.agregar_error("reservada_VS", "EOF")
@@ -281,6 +289,7 @@ class AnalizadorSintactico:
                         self.agregar_error("cadena", "EOF")
                         return self.mensaje_error()
                     elif actual.tipo == "cadena":
+                        equipo2 = actual.lexema.replace('"', "")
                         actual = self.sacar_token()
                         if actual is None:
                             self.agregar_error("reservada_TEMPORADA", "EOF")
@@ -296,6 +305,7 @@ class AnalizadorSintactico:
                                     self.agregar_error("numero", "EOF")
                                     return self.mensaje_error()
                                 elif actual.tipo == "numero":
+                                    anio1 = int(actual.lexema)
                                     actual = self.sacar_token()
                                     if actual is None:
                                         self.agregar_error("guion", "EOF")
@@ -306,12 +316,13 @@ class AnalizadorSintactico:
                                             self.agregar_error("numero", "EOF")
                                             return self.mensaje_error()
                                         elif actual.tipo == "numero":
+                                            anio2 = int(actual.lexema)
                                             actual = self.sacar_token()
                                             if actual is None:
                                                 self.agregar_error("mayorQUE", "EOF")
                                                 return self.mensaje_error()
                                             elif actual.tipo == "mayorQUE":
-                                                print("siuuuuuuuu")  # exito
+                                                return ManejoCSV.resultado(equipo1, equipo2, anio1, anio2)
                                             else:
                                                 self.agregar_error("mayorQUE", actual.tipo)
                                                 return self.mensaje_error()
@@ -709,6 +720,9 @@ class AnalizadorSintactico:
         else:
             self.agregar_error("reservada_TOP", actual.tipo)
             return self.mensaje_error()
+
+    def ADIOS(self):
+        return "Laliga Bot: ADIOS"
 
 
     def mensaje_error(self):
