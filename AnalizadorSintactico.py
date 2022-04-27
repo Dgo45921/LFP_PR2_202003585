@@ -446,15 +446,21 @@ class AnalizadorSintactico:
             return actual.tipo
 
     def GOLES(self):
+        condicion = ""
+        equipo = ""
+        anio1 = 0
+        anio2 = 0
         actual = self.sacar_token()
         if actual.tipo == "reservada_GOLES":
             respuesta = self.CONDICION_GOLES()
             if respuesta == "reservada_LOCAL" or respuesta == "reservada_VISITANTE" or respuesta == "reservada_TOTAL":
+                condicion = respuesta.replace("reservada_", "")
                 actual = self.sacar_token()
                 if actual is None:
                     self.agregar_error("cadena", "EOF")
                     return self.mensaje_error()
                 elif actual.tipo == "cadena":
+                    equipo = actual.lexema.replace('"', "")
                     actual = self.sacar_token()
                     if actual is None:
                         self.agregar_error("reservada_TEMPORADA", "EOF")
@@ -470,6 +476,7 @@ class AnalizadorSintactico:
                                 self.agregar_error("numero", "EOF")
                                 return self.mensaje_error()
                             elif actual.tipo == "numero":
+                                anio1 = int(actual.lexema)
                                 actual = self.sacar_token()
                                 if actual is None:
                                     self.agregar_error("guion", "EOF")
@@ -480,12 +487,13 @@ class AnalizadorSintactico:
                                         self.agregar_error("numero", "EOF")
                                         return self.mensaje_error()
                                     elif actual.tipo == "numero":
+                                        anio2 = int(actual.lexema)
                                         actual = self.sacar_token()
                                         if actual is None:
                                             self.agregar_error("mayorQUE", "EOF")
                                             return self.mensaje_error()
                                         elif actual.tipo == "mayorQUE":
-                                            print("siuuuuuuu")  # exito
+                                            return ManejoCSV.goles(condicion, equipo, anio1, anio2)
                                         else:
                                             self.agregar_error("mayorQUE", actual.tipo)
                                             return self.mensaje_error()

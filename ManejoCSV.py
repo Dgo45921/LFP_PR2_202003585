@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+
 csv_data = None
 
 
@@ -70,3 +71,39 @@ def jornada(num_jornada, anio1, anio2, name_archivo):
         os.startfile(name_archivo)
     else:
         os.system("xdg-open " + name_archivo)
+
+
+def goles(condicion, equipo, anio1, anio2):
+    contador = 0
+    if condicion == "TOTAL":
+        num_filas = len(csv_data)
+        for i in range(num_filas):
+            partido = csv_data.iloc[i]
+            anios = partido.Temporada.split("-")
+            anio_inico = int(anios[0])
+            anio_final = int(anios[1])
+            if (partido.Equipo1 == equipo or partido.Equipo2 == equipo) and anio_inico == anio1 and anio_final == anio2:
+                contador += 1
+        return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante y local, en la temporada: " + str(anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
+    elif condicion == "LOCAL":
+        num_filas = len(csv_data)
+        for i in range(num_filas):
+            partido = csv_data.iloc[i]
+            anios = partido.Temporada.split("-")
+            anio_inico = int(anios[0])
+            anio_final = int(anios[1])
+            if partido.Equipo1 == equipo and anio_inico == anio1 and anio_final == anio2:
+                contador += 1
+        return "LaLiga Bot: Los goles anotados por: " + equipo + " como local, en la temporada: " + str(
+            anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
+    elif condicion == "VISITANTE":
+        num_filas = len(csv_data)
+        for i in range(num_filas):
+            partido = csv_data.iloc[i]
+            anios = partido.Temporada.split("-")
+            anio_inico = int(anios[0])
+            anio_final = int(anios[1])
+            if partido.Equipo2 == equipo and anio_inico == anio1 and anio_final == anio2:
+                contador += 1
+        return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante, en la temporada: " + str(
+            anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
