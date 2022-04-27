@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from prettytable import PrettyTable
 
 csv_data = None
 
@@ -203,7 +204,8 @@ def temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicio, jornada_f
         anios = partido.Temporada.split("-")
         anio_inico = int(anios[0])
         anio_final = int(anios[1])
-        if contador <= jornada_fin and anio_inico == anio1 and anio_final == anio2 and (partido.Equipo1 == name_equipo or partido.Equipo2 == name_equipo) and contador == partido.Jornada:
+        if contador <= jornada_fin and anio_inico == anio1 and anio_final == anio2 and (
+                partido.Equipo1 == name_equipo or partido.Equipo2 == name_equipo) and contador == partido.Jornada:
             reporte.write("<tr>\n")
             reporte.write("<td>" + str(partido.Jornada) + "</td>\n")
             reporte.write("<td>" + partido.Equipo1 + "</td>\n")
@@ -215,7 +217,6 @@ def temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicio, jornada_f
         else:
             pass
 
-
     reporte.write("</table>\n")
     reporte.write("</body>\n")
     reporte.write("</html>\n")
@@ -225,6 +226,50 @@ def temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicio, jornada_f
     else:
         os.system("xdg-open " + name_archivo)
 
+
+# genera reporte de top
+
+def top(anio1, anio2, bandera_n, condicion):
+    cadena = """LaLiga Bot: \n"""
+    equipos_leidos = []
+    puntos_equipo = []
+    partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1) + "-" + str(anio2))]
+
+    for i in range(len(partidos)):
+        partido = partidos.iloc[i]
+        name_equipo = partido.Equipo1
+        if name_equipo not in equipos_leidos:
+            puntos = calcular_puntos(name_equipo, partidos)
+            equipos_leidos.append(name_equipo)
+            puntos_equipo.append(puntos)
+    lista_arrays = bubbleSort(puntos_equipo, equipos_leidos)
+    puntos_equipo = lista_arrays[0]
+    equipos_leidos = lista_arrays[1]
+
+    if bandera_n > len(puntos_equipo) or bandera_n > len(equipos_leidos):
+        return "La bandera n es demasiado grande para realizar esta operación"
+
+    if condicion == "INFERIOR":
+        puntos_equipo.reverse()
+        equipos_leidos.reverse()
+
+        puntos_equipo = puntos_equipo[0:bandera_n]
+        equipos_leidos = equipos_leidos[0:bandera_n]
+
+        puntos_equipo.reverse()
+        equipos_leidos.reverse()
+
+        x = PrettyTable()
+        x.field_names = ["No.", "Equipo", "Punteo"]
+        for i in range(len(equipos_leidos)):
+            x.add_row([str(i+1), equipos_leidos[i], str(puntos_equipo[i])])
+        return cadena + x.get_string()
+    else:
+        x = PrettyTable()
+        x.field_names = ["No.", "Equipo", "Punteo"]
+        for i in range(bandera_n):
+            x.add_row([str(i + 1), equipos_leidos[i], str(puntos_equipo[i])])
+        return cadena + x.get_string()
 
 
 def calcular_puntos(name_equipo, partidos):

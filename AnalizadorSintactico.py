@@ -566,10 +566,10 @@ class AnalizadorSintactico:
                                     respuesta = self.BANDERA1()
                                     if respuesta is None:
                                         ManejoCSV.tabla(anio1, anio2, "temporada.html")
-                                        return "LaLiga Bot: Generando archivo de tabla" "\n" + "\n"
+                                        return "LaLiga Bot: Generando archivo de clasificación de temporada" + str(anio1) + "-" + str(anio2) + "\n" + "\n"
                                     elif respuesta == "exito":
                                         ManejoCSV.tabla(anio1, anio2, lista_banderas[0] + ".html")
-                                        return "LaLiga Bot: Generando archivo de tabla: " + lista_banderas[0] + "\n" + "\n"
+                                        return "LaLiga Bot: Generando archivo de clasificación de temporada: " + lista_banderas[0] + str(anio1) + "-" + str(anio2) + "\n" + "\n"
                                     else:
                                         return respuesta
                                 else:
@@ -641,7 +641,6 @@ class AnalizadorSintactico:
                                         return self.mensaje_error()
                                     elif actual.tipo == "mayorQUE":
                                         name_archivo = ""
-                                        respuesta = self.LISTA_BANDERAS()
                                         print(lista_banderas)
                                         print(lista_banderas[0])
                                         if lista_banderas[0] == "":
@@ -657,11 +656,11 @@ class AnalizadorSintactico:
                                         if lista_banderas[2] == "":
                                             jornada_final = 0
                                         else:
-                                            jornada_final= int(lista_banderas[2])
+                                            jornada_final = int(lista_banderas[2])
 
                                         ManejoCSV.temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicial, jornada_final)
 
-                                        return respuesta
+                                        return "Generando archivo de resultados de temporada: " + str(anio1) + "-" + str(anio2) + " del " + name_equipo
                                     else:
                                         self.agregar_error("mayorQUE", actual.tipo)
                                         return self.mensaje_error()
@@ -699,10 +698,14 @@ class AnalizadorSintactico:
             return self.mensaje_error()
 
     def TOP(self):
+        condicion = ""
+        anio1 = 0
+        anio2 = 0
         actual = self.sacar_token()
         if actual.tipo == "reservada_TOP":
             respuesta = self.CONDICION_TOP()
             if "Error" not in respuesta:
+                condicion = respuesta.replace("reservada_", "")
                 actual = self.sacar_token()
                 if actual is None:
                     self.agregar_error("reservada_TEMPORADA", "EOF")
@@ -718,6 +721,7 @@ class AnalizadorSintactico:
                             self.agregar_error("numero", "EOF")
                             return self.mensaje_error()
                         elif actual.tipo == "numero":
+                            anio1 = int(actual.lexema)
                             actual = self.sacar_token()
                             if actual is None:
                                 self.agregar_error("guion", "EOF")
@@ -728,6 +732,7 @@ class AnalizadorSintactico:
                                     self.agregar_error("numero", "EOF")
                                     return self.mensaje_error()
                                 elif actual.tipo == "numero":
+                                    anio2 = int(actual.lexema)
                                     actual = self.sacar_token()
                                     if actual is None:
                                         self.agregar_error("mayorQUE", "EOF")
@@ -735,10 +740,11 @@ class AnalizadorSintactico:
                                     elif actual.tipo == "mayorQUE":
                                         respuesta = self.BANDERA4()
                                         if respuesta is None:
-                                            print("5 superiores o inferiores")
-                                            return "LaLiga Bot: Generando archivo de top" + "\n" + "\n"
+                                            respuesta = ManejoCSV.top(anio1, anio2, 5, condicion)
+                                            return respuesta + "\n" + "\n"
                                         elif respuesta == "exito":
-                                            return "LaLiga Bot: Generando archivo de top: " + lista_banderas[2] + "\n" + "\n"
+                                            respuesta = ManejoCSV.top(anio1, anio2, int(lista_banderas[3]), condicion)
+                                            return respuesta + "\n" + "\n"
                                         else:
                                             return respuesta
                                     else:
