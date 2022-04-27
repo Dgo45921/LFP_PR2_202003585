@@ -15,9 +15,9 @@ def definir_csv(ruta):
 
 
 def resultado(equipo1, equipo2, anio1, anio2):
-    num_filas = len(csv_data)
-    for i in range(num_filas):
-        partido = csv_data.iloc[i]
+    partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1) + "-" + str(anio2))]
+    for i in range(len(partidos)):
+        partido = partidos.iloc[i]
         anios = partido.Temporada.split("-")
         anio_inico = int(anios[0])
         anio_final = int(anios[1])
@@ -49,9 +49,9 @@ def jornada(num_jornada, anio1, anio2, name_archivo):
     reporte.write("<th>Goles visitante</th>\n")
     reporte.write("</tr>\n")
 
-    num_filas = len(csv_data)
-    for i in range(num_filas):
-        partido = csv_data.iloc[i]
+    partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1)+"-"+str(anio2))]
+    for i in range(len(partidos)):
+        partido = partidos.iloc[i]
         anios = partido.Temporada.split("-")
         anio_inico = int(anios[0])
         anio_final = int(anios[1])
@@ -75,10 +75,10 @@ def jornada(num_jornada, anio1, anio2, name_archivo):
 
 def goles(condicion, equipo, anio1, anio2):
     contador = 0
+    partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1) + "-" + str(anio2))]
     if condicion == "TOTAL":
-        num_filas = len(csv_data)
-        for i in range(num_filas):
-            partido = csv_data.iloc[i]
+        for i in range(len(partidos)):
+            partido = partidos.iloc[i]
             anios = partido.Temporada.split("-")
             anio_inico = int(anios[0])
             anio_final = int(anios[1])
@@ -86,9 +86,8 @@ def goles(condicion, equipo, anio1, anio2):
                 contador += 1
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante y local, en la temporada: " + str(anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
     elif condicion == "LOCAL":
-        num_filas = len(csv_data)
-        for i in range(num_filas):
-            partido = csv_data.iloc[i]
+        for i in range(len(partidos)):
+            partido = partidos.iloc[i]
             anios = partido.Temporada.split("-")
             anio_inico = int(anios[0])
             anio_final = int(anios[1])
@@ -97,9 +96,8 @@ def goles(condicion, equipo, anio1, anio2):
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como local, en la temporada: " + str(
             anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
     elif condicion == "VISITANTE":
-        num_filas = len(csv_data)
-        for i in range(num_filas):
-            partido = csv_data.iloc[i]
+        for i in range(len(partidos)):
+            partido = partidos.iloc[i]
             anios = partido.Temporada.split("-")
             anio_inico = int(anios[0])
             anio_final = int(anios[1])
@@ -107,3 +105,6 @@ def goles(condicion, equipo, anio1, anio2):
                 contador += 1
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante, en la temporada: " + str(
             anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
+
+def tabla(anio1, anio2, name_archivo):
+    pass
