@@ -401,10 +401,12 @@ class AnalizadorSintactico:
                                         respuesta = self.BANDERA1()
                                         if respuesta is None:
                                             print("nombre default")
+                                            ManejoCSV.jornada(int(num_jornada), int(anio1), int(anio2), "jornada.html")
                                             return "LaLiga Bot: Generando archivo de resultados jornada" + num_jornada + " temporada " + anio1 + " - " + anio2 + "\n" + "\n"
                                         elif respuesta == "exito":
+                                            ManejoCSV.jornada(int(num_jornada), int(anio1), int(anio2), lista_banderas[0] + ".html")
                                             return "LaLiga Bot: Generando archivo de resultados: " + lista_banderas[
-                                                0] + "jornada" + num_jornada + " temporada " + anio1 + " - " + anio2 + "\n" + "\n"
+                                                0] + ".html jornada" + num_jornada + " temporada " + anio1 + " - " + anio2 + "\n" + "\n "
                                         else:
                                             return respuesta
                                     else:
