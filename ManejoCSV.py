@@ -14,6 +14,8 @@ def definir_csv(ruta):
         csv_data = None
 
 
+# indica el resultado final de un partido
+
 def resultado(equipo1, equipo2, anio1, anio2):
     partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1) + "-" + str(anio2))]
     for i in range(len(partidos)):
@@ -25,6 +27,9 @@ def resultado(equipo1, equipo2, anio1, anio2):
             return "LaLiga Bot: El resultado de este partido fue: " + equipo1 + ": " + str(
                 partido.Goles1) + " " + equipo2 + ": " + str(partido.Goles2) + "\n" + "\n"
     return "LaLiga Bot: No encontré un partido con la información que me has dado..."
+
+
+# genera una tabla con todos los partidos de una jornada especifica en cierta temporada
 
 
 def jornada(num_jornada, anio1, anio2, name_archivo):
@@ -73,6 +78,9 @@ def jornada(num_jornada, anio1, anio2, name_archivo):
         os.system("xdg-open " + name_archivo)
 
 
+# se encarga de mostrar los goles hechos por un equipo en cierta temporada y cierta condicion
+
+
 def goles(condicion, equipo, anio1, anio2):
     contador = 0
     partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1) + "-" + str(anio2))]
@@ -107,6 +115,9 @@ def goles(condicion, equipo, anio1, anio2):
                 contador += 1
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante, en la temporada: " + str(
             anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
+
+
+# genera tabla de puntuaciones de cada equipo
 
 
 def tabla(anio1, anio2, name_archivo):
@@ -157,6 +168,63 @@ def tabla(anio1, anio2, name_archivo):
         os.startfile(name_archivo)
     else:
         os.system("xdg-open " + name_archivo)
+
+
+# genera un reporte de todos los resultados de un equipo en cierta temporada
+
+def temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicio, jornada_fin):
+    reporte = open(name_archivo, "w")
+    reporte.write("<!DOCTYPE html>\n")
+    reporte.write("<html>\n")
+    reporte.write("<head>\n")
+    reporte.write("""<meta charset="UTF-8">\n""")
+    reporte.write("<title>Resultados temporada</title>\n")
+    reporte.write("""<link rel="stylesheet" href="style.css">\n""")
+    reporte.write("</head>\n")
+    reporte.write("<body>\n")
+    reporte.write("<h1>RESULTADOS " + name_equipo + "</h1>")
+    reporte.write("<h3>Temporada:  " + str(anio1) + "-" + str(anio2) + "</h3>")
+    # aqui ira la tabla
+    reporte.write("<table>\n")
+    reporte.write("<tr>\n")
+    reporte.write("<th>Jornada</th>\n")
+    reporte.write("<th>Local</th>\n")
+    reporte.write("<th>Goles local</th>\n")
+    reporte.write("<th>Visitante</th>\n")
+    reporte.write("<th>Goles visitante</th>\n")
+    reporte.write("</tr>\n")
+    contador = jornada_inicio
+
+    partidos = csv_data[csv_data["Temporada"].str.contains(str(anio1) + "-" + str(anio2))]
+    if jornada_fin == 0:
+        jornada_fin = partidos.iloc[-1].Jornada
+    for i in range(len(partidos)):
+        partido = partidos.iloc[i]
+        anios = partido.Temporada.split("-")
+        anio_inico = int(anios[0])
+        anio_final = int(anios[1])
+        if contador <= jornada_fin and anio_inico == anio1 and anio_final == anio2 and (partido.Equipo1 == name_equipo or partido.Equipo2 == name_equipo) and contador == partido.Jornada:
+            reporte.write("<tr>\n")
+            reporte.write("<td>" + str(partido.Jornada) + "</td>\n")
+            reporte.write("<td>" + partido.Equipo1 + "</td>\n")
+            reporte.write("<td>" + str(partido.Goles1) + "</td>\n")
+            reporte.write("<td>" + partido.Equipo2 + "</td>\n")
+            reporte.write("<td>" + str(partido.Goles2) + "</td>\n")
+            reporte.write("</tr>\n")
+            contador += 1
+        else:
+            pass
+
+
+    reporte.write("</table>\n")
+    reporte.write("</body>\n")
+    reporte.write("</html>\n")
+    reporte.close()
+    if os.name == "nt":
+        os.startfile(name_archivo)
+    else:
+        os.system("xdg-open " + name_archivo)
+
 
 
 def calcular_puntos(name_equipo, partidos):

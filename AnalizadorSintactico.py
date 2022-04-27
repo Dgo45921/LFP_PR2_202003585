@@ -595,6 +595,11 @@ class AnalizadorSintactico:
             return self.mensaje_error()
 
     def PARTIDOS(self):
+        jornada_inicial = 0
+        jornada_final = 0
+        anio1 = 0
+        anio2 = 0
+        name_equipo = ""
         actual = self.sacar_token()
         if actual.tipo == "reservada_PARTIDOS":
             actual = self.sacar_token()
@@ -602,6 +607,7 @@ class AnalizadorSintactico:
                 self.agregar_error("cadena", "EOF")
                 return self.mensaje_error()
             elif actual.tipo == "cadena":
+                name_equipo = actual.lexema.replace('"', "")
                 actual = self.sacar_token()
                 if actual is None:
                     self.agregar_error("reservada_TEMPORADA", "EOF")
@@ -617,6 +623,7 @@ class AnalizadorSintactico:
                             self.agregar_error("numero", "EOF")
                             return self.mensaje_error()
                         elif actual.tipo == "numero":
+                            anio1 = int(actual.lexema)
                             actual = self.sacar_token()
                             if actual is None:
                                 self.agregar_error("guion", "EOF")
@@ -627,12 +634,33 @@ class AnalizadorSintactico:
                                     self.agregar_error("numero", "EOF")
                                     return self.mensaje_error()
                                 elif actual.tipo == "numero":
+                                    anio2 = int(actual.lexema)
                                     actual = self.sacar_token()
                                     if actual is None:
                                         self.agregar_error("mayorQUE", "EOF")
                                         return self.mensaje_error()
                                     elif actual.tipo == "mayorQUE":
+                                        name_archivo = ""
                                         respuesta = self.LISTA_BANDERAS()
+                                        print(lista_banderas)
+                                        print(lista_banderas[0])
+                                        if lista_banderas[0] == "":
+                                            name_archivo = "partidos.html"
+                                        else:
+                                            name_archivo = lista_banderas[0] + ".html"
+
+                                        if lista_banderas[1] == "":
+                                            jornada_inicial = 1
+                                        else:
+                                            jornada_inicial = int(lista_banderas[1])
+
+                                        if lista_banderas[2] == "":
+                                            jornada_final = 0
+                                        else:
+                                            jornada_final= int(lista_banderas[2])
+
+                                        ManejoCSV.temporada(name_equipo, anio1, anio2, name_archivo, jornada_inicial, jornada_final)
+
                                         return respuesta
                                     else:
                                         self.agregar_error("mayorQUE", actual.tipo)
