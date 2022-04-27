@@ -526,6 +526,9 @@ class AnalizadorSintactico:
             return self.mensaje_error()
 
     def TABLA(self):
+        anio1 = 0
+        anio2 = 0
+        name_archivo = ""
         actual = self.sacar_token()
         if actual.tipo == "reservada_TABLA":
             actual = self.sacar_token()
@@ -543,6 +546,7 @@ class AnalizadorSintactico:
                         self.agregar_error("numero", "EOF")
                         return self.mensaje_error()
                     elif actual.tipo == "numero":
+                        anio1 = int(actual.lexema)
                         actual = self.sacar_token()
                         if actual is None:
                             self.agregar_error("guion", "EOF")
@@ -553,6 +557,7 @@ class AnalizadorSintactico:
                                 self.agregar_error("numero", "EOF")
                                 return self.mensaje_error()
                             elif actual.tipo == "numero":
+                                anio2 = int(actual.lexema)
                                 actual = self.sacar_token()
                                 if actual is None:
                                     self.agregar_error("mayorQUE", "EOF")
@@ -560,10 +565,11 @@ class AnalizadorSintactico:
                                 elif actual.tipo == "mayorQUE":
                                     respuesta = self.BANDERA1()
                                     if respuesta is None:
-                                        print("nombre default")
+                                        ManejoCSV.tabla(anio1, anio2, "temporada.html")
                                         return "LaLiga Bot: Generando archivo de tabla" "\n" + "\n"
                                     elif respuesta == "exito":
-                                        return "LaLiga Bot: Generando archivo de tabla: " + lista_banderas[0]  + "\n" + "\n"
+                                        ManejoCSV.tabla(anio1, anio2, lista_banderas[0] + ".html")
+                                        return "LaLiga Bot: Generando archivo de tabla: " + lista_banderas[0] + "\n" + "\n"
                                     else:
                                         return respuesta
                                 else:
