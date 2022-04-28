@@ -92,7 +92,11 @@ def goles(condicion, equipo, anio1, anio2):
             anio_inico = int(anios[0])
             anio_final = int(anios[1])
             if (partido.Equipo1 == equipo or partido.Equipo2 == equipo) and anio_inico == anio1 and anio_final == anio2:
-                contador += 1
+                if partido.Equipo1 == equipo:
+                    contador += partido.Goles1
+                else:
+                    contador += partido.Goles2
+
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante y local, en la temporada: " + str(
             anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
     elif condicion == "LOCAL":
@@ -102,7 +106,7 @@ def goles(condicion, equipo, anio1, anio2):
             anio_inico = int(anios[0])
             anio_final = int(anios[1])
             if partido.Equipo1 == equipo and anio_inico == anio1 and anio_final == anio2:
-                contador += 1
+                contador += partido.Goles1
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como local, en la temporada: " + str(
             anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
     elif condicion == "VISITANTE":
@@ -112,7 +116,7 @@ def goles(condicion, equipo, anio1, anio2):
             anio_inico = int(anios[0])
             anio_final = int(anios[1])
             if partido.Equipo2 == equipo and anio_inico == anio1 and anio_final == anio2:
-                contador += 1
+                contador += partido.Goles2
         return "LaLiga Bot: Los goles anotados por: " + equipo + " como visitante, en la temporada: " + str(
             anio1) + "-" + str(anio2) + " fueron: " + str(contador) + "\n" + "\n"
 
